@@ -47,7 +47,7 @@ BEGIN
 END
 GO
 
--- 4. DELETE SCRIPT (as stored procedure)
+-- DELETE SCRIPT (as stored procedure)
 
 CREATE PROCEDURE DeleteBookByID
     @BookID INT
@@ -58,7 +58,7 @@ BEGIN
 END
 GO
 
--- 5. SELECT SCRIPT (as stored procedure)
+-- SELECT SCRIPT (as stored procedure)
 -- Get books published after 2010 with author name
 
 CREATE PROCEDURE GetBooksAfter2010
