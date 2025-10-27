@@ -1,5 +1,6 @@
 using BookCatalog;
 using BookCatalog.Dtos;
+using BookCatalog.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,5 +71,40 @@ app.MapGet("/api/authors/{id}/books", (int id) =>
     return Results.Ok(books);
 });
 
+
+
+// Accepts a new book creation request. Validates:
+// 1. Title is not empty
+// 2. PublicationYear is not in the future
+// 3. Author exists
+// Returns 201 Created with a success message if valid.
+app.MapPost("api/books", (BookCreateDto newBook) =>
+{
+    if (string.IsNullOrEmpty(newBook.Title))
+    {
+        return Results.BadRequest("Title can't be empty");
+    }
+    if (newBook.PublicationYear > DateTime.Now.Year)
+    {
+        return Results.BadRequest($"Publication year can not be more than {DateTime.Now.Year}");
+    }
+    var author = Data.GetAuthorById(newBook.AuthorID);
+    if (author == null)
+    {
+        return Results.BadRequest($"Author with ID {newBook.AuthorID} does not exists");
+    }
+    // Adding book
+    Book book = new Book()
+    {
+        Title = newBook.Title,
+        AuthorID = newBook.AuthorID,
+        PublicationYear = newBook.PublicationYear
+    };
+    Data.AddBook(book);
+    return Results.Json(
+        new { message = $"Book '{newBook.Title}' successfully added!" },
+        statusCode: StatusCodes.Status201Created
+    );
+});
 
 app.Run();
