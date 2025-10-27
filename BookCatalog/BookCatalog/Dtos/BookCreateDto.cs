@@ -1,4 +1,6 @@
-﻿namespace BookCatalog.Dtos
+﻿using System.Runtime.InteropServices;
+
+namespace BookCatalog.Dtos
 {
 
     // Used to accept book creation requests from clients.

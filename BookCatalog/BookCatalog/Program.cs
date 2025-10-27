@@ -32,7 +32,7 @@ app.MapGet("api/books", (int? publicationYear, string? sortby) =>
     {
         ID = b.ID,
         Title = b.Title,
-        AuthorName = Data.GetAuthorById(b.AuthorID).Name,
+        AuthorName = Data.GetAuthorById(b.AuthorID).Name,  // every book is guaranteed to have an existing author
         PublicationYear = b.PublicationYear
     });
 
@@ -97,8 +97,10 @@ app.MapGet("/api/authors/{id}/books", (int id) =>
 // 2. PublicationYear is not in the future
 // 3. Author exists
 // Returns 201 Created with a success message if valid.
+
 app.MapPost("api/books", (BookCreateDto newBook) =>
 {
+    
     if (string.IsNullOrEmpty(newBook.Title))
     {
         return Results.BadRequest("Title can't be empty");
