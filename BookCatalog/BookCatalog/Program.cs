@@ -22,25 +22,44 @@ app.UseHttpsRedirection();
 
 
 
-// Returns a list of all books, including their author names.
-// If no books exist, returns 404 Not Found.
-app.MapGet("/api/books", () =>
+// Option A: Advanced Filtering & Sorting
+// This endpoint returns a list of all books with their author names.
+// It also supports optional filtering and sorting via query parameters.
+app.MapGet("api/books", (int? publicationYear, string? sortby) =>
 {
     var books = Data.GetAllBooks()
- .Select(b => new BookDto
- {
-     ID = b.ID,
-     Title = b.Title,
-     AuthorName = Data.GetAuthorById(b.AuthorID).Name, // every book is guaranteed to have an existing author
-     PublicationYear = b.PublicationYear
- });
-
-    if (!books.Any())
+    .Select(b => new BookDto()
     {
-        return Results.NotFound($"There is No books");
+        ID = b.ID,
+        Title = b.Title,
+        AuthorName = Data.GetAuthorById(b.AuthorID).Name,
+        PublicationYear = b.PublicationYear
+    });
+
+    //filter by year
+    if (publicationYear.HasValue)
+    {
+        books = books.Where(b => b.PublicationYear == publicationYear);
     }
 
+    //sort by title
+    if (!string.IsNullOrWhiteSpace(sortby))
+    {
+        if (sortby.Equals("title", StringComparison.OrdinalIgnoreCase))
+        {
+            books = books.OrderBy(b => b.Title);
+        }
+        else if (sortby.Equals("year", StringComparison.OrdinalIgnoreCase))
+        {
+            books = books.OrderBy(b => b.PublicationYear);
+        }
+    }
+    if (!books.Any())
+    {
+        return Results.NotFound("No books found!");
+    }
     return Results.Ok(books);
+
 });
 
 
