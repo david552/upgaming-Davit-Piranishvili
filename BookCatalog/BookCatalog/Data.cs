@@ -28,11 +28,17 @@ namespace BookCatalog
         // Returns all books
         public static IEnumerable<Book> GetAllBooks() => _books;
 
-
         // Returns an author by ID, or null if not found
         public static Author? GetAuthorById(int id)
         {
             return _authors.FirstOrDefault(a => a.ID == id);
         }
+
+        // Returns all books by a specific author
+        public static IEnumerable<Book> GetAllBooksByAuthorId(int id)
+        {
+            return _books.Where(b => b.AuthorID == id);
+        }
+
     }
 }

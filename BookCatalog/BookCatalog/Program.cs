@@ -42,4 +42,33 @@ app.MapGet("/api/books", () =>
     return Results.Ok(books);
 });
 
+
+
+// Returns all books by a specific author.
+// Returns 404 if author not found or author has no books.
+app.MapGet("/api/authors/{id}/books", (int id) =>
+{
+    var author = Data.GetAuthorById(id);
+    if (author == null)
+    {
+        return Results.NotFound($"Author with ID {id} not found.");
+    }
+    var books = Data.GetAllBooksByAuthorId(id)
+    .Select(b => new BookDto
+    {
+        ID = b.ID,
+        Title = b.Title,
+        AuthorName = author.Name,
+        PublicationYear = b.PublicationYear
+    });
+
+    if (!books.Any())
+    {
+        return Results.NotFound($"No books found for author with ID {id}.");
+    }
+
+    return Results.Ok(books);
+});
+
+
 app.Run();
